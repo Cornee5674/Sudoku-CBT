@@ -7,9 +7,21 @@ namespace SudokuCBT
 {
     class Program
     {
+        static int debugRow = 0;
+        static int debugColumn = 0;
+
         static void Main(string[] args)
         {
             Sudoku sudoku = createSudoku(args, true);
+
+            //sudoku.PrintConstraint(debugRow, debugColumn);
+
+            // Make sudoku node consistent (knoopconsistent)
+            sudoku.NodeConsistency();
+
+
+            //sudoku.PrintConstraint(debugRow, debugColumn);
+
             Console.ReadKey();
         }
 
