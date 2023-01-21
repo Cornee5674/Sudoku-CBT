@@ -12,34 +12,25 @@ namespace SudokuCBT
 
         static void Main(string[] args)
         {
-            Sudoku sudoku = createSudoku(args, true);
-
-            //sudoku.PrintConstraint(debugRow, debugColumn);
-
-            // Make sudoku node consistent (knoopconsistent)
-            sudoku.NodeConsistency();
-
-
-            //sudoku.PrintConstraint(debugRow, debugColumn);
+            SudokuCBT sudokuCBT = createSudokuCBT(args);
 
             Console.ReadKey();
         }
 
-        static Sudoku createSudoku(string[] args, bool print)
+        static SudokuCBT createSudokuCBT(string[] args)
         {
             // Creating the Sudoku
             string text = File.ReadAllText("Arguments.txt");
             string[] textArgs = text.Split(" ");
-            Sudoku sudoku;
+            SudokuCBT sudokuCBT;
             if (args.Length > 0)
             {
-                sudoku = new Sudoku(convertToInt(args), print);
-            }
-            else
+                sudokuCBT = new SudokuCBT(convertToInt(args));
+            }else
             {
-                sudoku = new Sudoku(convertToInt(textArgs), print);
+                sudokuCBT = new SudokuCBT(convertToInt(textArgs));
             }
-            return sudoku;
+            return sudokuCBT;
         }
 
         static int[] convertToInt(string[] args)
