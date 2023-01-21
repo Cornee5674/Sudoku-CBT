@@ -17,6 +17,8 @@ namespace SudokuCBT
 
             sudokuCBT.printConstraints();
 
+            Console.WriteLine(sudokuCBT.partialSolution());
+
             Console.ReadKey();
         }
 

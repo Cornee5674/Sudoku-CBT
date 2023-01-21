@@ -99,6 +99,78 @@ namespace SudokuCBT
             }
 		}
 
+		public bool partialSolution()
+		{
+			for (int i = 0; i < 9; i++)
+			{
+				// Temporary dictionary which is used as a counter for how many times a number occurs
+				Dictionary<int, int> counterRows = new Dictionary<int, int>();
+				Dictionary<int, int> counterColumns = new Dictionary<int, int>();
+				for (int j = 0; j < 9; j++)
+				{
+					// For checking rows, i is rowNr, while j is column nr
+					int currentNrRow = sudokuField[i, j];
+					if (currentNrRow != 0)
+					{
+						AddToDict(currentNrRow, counterRows);
+					}
+
+					// For checking columns, i is colNr while j is row nr
+					int currentNrColumns = sudokuField[j, i];
+					if (currentNrColumns != 0)
+					{
+						AddToDict(currentNrColumns, counterColumns);
+					}
+				}
+				if (checkDictValue2(counterColumns) || checkDictValue2(counterRows)) return false;
+			}
+
+			// These coordinates all belong to a unique block, makes it simpler to loop over the blocks
+			(int, int)[] getAllBlocks = { (0, 0), (0, 3), (0, 6), (3, 0), (3, 3), (3, 6), (6, 0), (6, 3), (6, 6) };
+			for (int i = 0; i < getAllBlocks.Length; i++)
+			{
+				// Here we get all the indices of a specific block
+				List<(int, int)> tempIndices = blockIndices(getAllBlocks[i].Item1, getAllBlocks[i].Item2);
+				Dictionary<int, int> counterBlocks = new Dictionary<int, int>();
+				foreach (var item in tempIndices)
+				{
+					// And we count the number of occurences of a number in a block
+					int currentNr = sudokuField[item.Item1, item.Item2];
+					AddToDict(currentNr, counterBlocks);
+				}
+				if (checkDictValue2(counterBlocks)) return false;
+			}
+
+			return true;
+		}
+
+        private bool checkDictValue2(Dictionary<int, int> dict)
+        {
+            // Here we check if any key in the dictionary has a value of 2 or greater, if so, the sudoku is not a partial solution
+            foreach (var item in dict)
+            {
+                if (item.Value > 1 && item.Key != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void AddToDict(int nr, Dictionary<int, int> dict)
+        {
+            // This dictionary is used as a counter, so if the dict contains a given number, we increase the count of this number.
+            // If not, we add it to the dictionary
+            if (dict.ContainsKey(nr))
+            {
+                dict[nr]++;
+            }
+            else
+            {
+                dict.Add(nr, 1);
+            }
+        }
+
         public void printConstraints()
 		{
 			// Debug function for constraint and domain lists
