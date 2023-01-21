@@ -40,16 +40,17 @@ namespace SudokuCBT
 
             Console.WriteLine("Empty sudoku:");
 			printSudoku();
-			printConstraints();
 		}
 
 		// Use these 3 functions to get the lists of indices that lie in the same row/block/column
         private List<(int, int)> blockIndices(int x, int y)
         {
+			// Create 2 lists that correspond to the x and y axis of the sudoku
             List<(int, int)> indices = new List<(int, int)>();
             List<int> tempxList = returnTempList(x);
             List<int> tempyList = returnTempList(y);
 
+			// Create a tuple list containing every possible value by combining both temporary lists
             for (int i = 0; i < tempxList.Count; i++)
             {
                 for (int j = 0; j < tempyList.Count; j++)
@@ -57,11 +58,13 @@ namespace SudokuCBT
                     indices.Add((tempxList[i], tempyList[j]));
                 }
             }
+			// This list now has every index of the block that x, y is in
             return indices;
         }
 
 		private List<(int, int)> rowIndices(int x, int y)
 		{
+			// Returns all the indices that are in the same row as coordinate x, y
 			List<(int, int)> indices = new List<(int, int)>();
 			for (int i = 0; i < 9; i++)
 			{
@@ -72,6 +75,7 @@ namespace SudokuCBT
 
 		private List<(int, int)> columnIndices(int x, int y)
 		{
+			// Returns all the indices that are in the same column as coordinate x, y
 			List<(int, int)> indices = new List<(int, int)>();
 			for (int i = 0; i < 9; i++)
 			{
@@ -80,8 +84,24 @@ namespace SudokuCBT
 			return indices;
 		}
 
-        private void printConstraints()
+		public void NodeConsistency()
 		{
+			// It applies every reflexive constraint by intersecting the constraint list with the domain list on every field
+			foreach (var item in constraints)
+			{
+				(int a, int b) index = item.Key.Item1;
+				List<int> tempList = new List<int>();
+				foreach(var value in item.Value)
+				{
+					tempList.Add(value.Item1);
+				}
+				domainField[index.a, index.b] = domainField[index.a, index.b].Intersect(tempList).ToList();
+            }
+		}
+
+        public void printConstraints()
+		{
+			// Debug function for constraint and domain lists
             foreach (var item in constraints)
             {
 				string x = "";
@@ -89,7 +109,15 @@ namespace SudokuCBT
 				{
 					x += item2 + " : ";
 				}
-                Console.Write("Constraint: " + item.Key + "        Value: " + x + "\n");
+
+                (int a, int b) index = item.Key.Item1;
+				string y = "";
+				foreach (var item3 in domainField[index.a, index.b])
+				{
+					y += item3 + " : ";
+				}
+
+                Console.Write("Constraint: " + item.Key + "        Value: " + x + "\nDomain: " + y + "\n\n");
             }
         }
 

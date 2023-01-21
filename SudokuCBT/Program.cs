@@ -13,6 +13,9 @@ namespace SudokuCBT
         static void Main(string[] args)
         {
             SudokuCBT sudokuCBT = createSudokuCBT(args);
+            sudokuCBT.NodeConsistency();
+
+            sudokuCBT.printConstraints();
 
             Console.ReadKey();
         }
