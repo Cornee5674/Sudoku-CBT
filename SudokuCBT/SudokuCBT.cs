@@ -41,8 +41,36 @@ namespace SudokuCBT
             Console.WriteLine("Empty sudoku:");
 			printSudoku();
 		}
+        public bool forwardChecking(int newRow, int newCol)
+        {
+            //get value of newly assigned variable
+            int newValue = this.sudokuField[newRow, newCol];
 
-		// Use these 3 functions to get the lists of indices that lie in the same row/block/column
+            //create list with all indices to be checked
+            List<(int, int)> indices = this.rowIndices(newRow, newCol);
+            indices.AddRange(this.columnIndices(newRow, newCol));
+            indices.AddRange(this.blockIndices(newRow, newCol));
+
+            //remove duplicates and indices of newly set variable itself
+            indices = indices.Distinct().ToList();
+            indices.Remove((newRow, newCol));
+
+            //iterate indices
+            for (int i = 0; i < indices.Count; i++)
+            {
+                //check domain of current variable
+                List<int> curDomain = this.domainField[indices[i].Item1, indices[i].Item2];
+
+                //if domain would become empty by removing set value, return false
+                if (curDomain.Contains(newValue) & (curDomain.Count == 1))
+                    return false;
+            }
+
+            //if none of the domains would become empty, return true
+            return true;
+        }
+
+        // Use these 3 functions to get the lists of indices that lie in the same row/block/column
         private List<(int, int)> blockIndices(int x, int y)
         {
 			// Create 2 lists that correspond to the x and y axis of the sudoku
@@ -313,8 +341,7 @@ namespace SudokuCBT
             }
         }
 
-
-		public void printSudoku()
+        public void printSudoku()
 		{
 			// Printing the sudoku by using fancy semantics
             string stringBuild = "+---------------------------------------+\n";
@@ -337,6 +364,11 @@ namespace SudokuCBT
             stringBuild += "+---------------------------------------+";
             Console.WriteLine(stringBuild);
         }
-	}
+        public SudokuCBT Clone()
+        {
+            return (SudokuCBT)MemberwiseClone();
+
+        }
+    }
 }
 
