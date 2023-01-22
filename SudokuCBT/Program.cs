@@ -109,10 +109,11 @@ namespace SudokuCBT
                     //Once we have found a partial solution we do a forward check
                     //If this check is false it means there is no actual possible solution possible
                     //with this partial solution, thus we return false
-
-                    //Code that should be here but doesn't work yet
-                    //if (!sudoku.forwardChecking(x, y))
-                    //    return false;
+                    if (!sudoku.forwardChecking(x, y))
+                    {
+                        sudoku.sudokuField[x, y] = 0;
+                        return false;
+                    }
 
 
 
