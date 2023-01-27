@@ -112,17 +112,21 @@ namespace SudokuCBT
                     if (!sudoku.forwardChecking(x, y))
                     {
                         sudoku.sudokuField[x, y] = 0;
-                        return false;
+                        //return false;
+                    }
+                    else
+                    {
+                        //If we have reached this point it means that this partial solution is good to expand upon
+                        //We make use of recursion to check the next field
+                        //If true is returned by the function it means that we have found a solution
+                        //Therefore this function returns true as well
+                        if (solve(sudoku, x + 1, y))
+                            return true;
                     }
 
 
 
-                    //If we have reached this point it means that this partial solution is good to expand upon
-                    //We make use of recursion to check the next field
-                    //If true is returned by the function it means that we have found a solution
-                    //Therefore this function returns true as well
-                    if (solve(sudoku, x + 1, y))
-                        return true;
+                    
                 }
                 //If this is not a partial solution we revert our change
                 sudoku.sudokuField[x, y] = 0;
