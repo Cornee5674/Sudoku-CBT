@@ -17,7 +17,7 @@ namespace SudokuCBT
 		int rows = 9;
 		int columns = 9;
 
-		public SudokuCBT(int[] list)
+		public SudokuCBT(int[] list, bool print)
 		{
 			// Initialize sudoku
 			sudokuField = new int[rows, columns];
@@ -38,8 +38,11 @@ namespace SudokuCBT
             constraints = new Dictionary<((int, int), (int, int)), List<(int, int)>>();
 			initializeConstraints();
 
-            Console.WriteLine("Empty sudoku:");
-			printSudoku();
+			if (print)
+			{
+                Console.WriteLine("Empty sudoku:");
+                printSudoku();
+            }       
 		}
         public bool forwardChecking(int newRow, int newCol)
         {

@@ -20,13 +20,36 @@ namespace SudokuCBT
             s.Start();
             
             //Run the chronological backtracking algorithm on the loaded sudoku and print the solution
-            doCBT(sudokuCBT);
+            doCBT(sudokuCBT, true);
+            s.Stop();
+
             sudokuCBT.printSudoku();
 
             //Print the elapsed time
-            s.Stop();
-            Console.WriteLine("Elapsed time: " + s.ElapsedMilliseconds.ToString());   
+            Console.WriteLine("Elapsed time: " + s.ElapsedMilliseconds.ToString() + " ms");
+
+            BenchmarkSudoku(args, false);
+
             Console.ReadKey();
+        }
+
+        static long BenchmarkSudoku(string[] args, bool useForwardChecking)
+        {
+            int runXTimes = 50;
+            long totalTime = 0;
+            for (int i = 0; i < runXTimes; i++)
+            {
+                SudokuCBT sudoku = createSudokuCBT(args);
+                Stopwatch s = new();
+                s.Start();
+                doCBT(sudoku, useForwardChecking);
+                s.Stop();
+                Console.WriteLine((i + 1) + ": " + s.ElapsedMilliseconds.ToString());
+                totalTime += s.ElapsedMilliseconds;
+            }
+            long averageMS = totalTime / 50;
+            Console.WriteLine("Average elapsed time, over 50 runs: " + averageMS);
+            return averageMS;
         }
 
         static SudokuCBT createSudokuCBT(string[] args)
@@ -37,10 +60,10 @@ namespace SudokuCBT
             SudokuCBT sudokuCBT;
             if (args.Length > 0)
             {
-                sudokuCBT = new SudokuCBT(convertToInt(args));
+                sudokuCBT = new SudokuCBT(convertToInt(args), true);
             }else
             {
-                sudokuCBT = new SudokuCBT(convertToInt(textArgs));
+                sudokuCBT = new SudokuCBT(convertToInt(textArgs), false);
             }
             return sudokuCBT;
         }
@@ -56,7 +79,7 @@ namespace SudokuCBT
             return toInts;
         }
 
-        static void doCBT(SudokuCBT originalSudoku)
+        static void doCBT(SudokuCBT originalSudoku, bool useForwardChecking)
         {
             SudokuCBT currentSudoku = originalSudoku.Clone();
             
@@ -65,14 +88,14 @@ namespace SudokuCBT
 
             //Solve the sudoku and return when solved
             //If no solution is found we indicate this
-            if (solve(currentSudoku, 0, 0))
+            if (solve(currentSudoku, 0, 0, useForwardChecking))
                 return;
             else
                 Console.WriteLine("No solution found");
         }
 
         //Recursive function that solves the sudoku
-        static bool solve(SudokuCBT sudoku, int x, int y)
+        static bool solve(SudokuCBT sudoku, int x, int y, bool useForwardChecking)
         {
             //If all squares are filled in we can return true meaning the sudoku is solved
             if(x == 9 && y == 8)
@@ -88,7 +111,7 @@ namespace SudokuCBT
             //If this returns false it means we need to go back a step and check the next successor
             //If true is returned it means we have encoutered a solution and we go back up the entire chain
             if (sudoku.sudokuField[x,y] != 0)
-                return solve(sudoku, x+1, y);
+                return solve(sudoku, x+1, y, useForwardChecking);
 
             //Get the domain of the current field
             List<int> domain = sudoku.domainField[x, y];
@@ -106,25 +129,28 @@ namespace SudokuCBT
                 //If this is a partial solution we continue
                 if (sudoku.partialSolution())
                 {
-                    //Once we have found a partial solution we do a forward check
-                    //If this check is false it means there is no actual possible solution possible
-                    //with this partial solution, thus we return false
-                    if (!sudoku.forwardChecking(x, y))
-                    {
-                        sudoku.sudokuField[x, y] = 0;
-                        //return false;
-                    }
-                    else
-                    {
-                        //If we have reached this point it means that this partial solution is good to expand upon
-                        //We make use of recursion to check the next field
-                        //If true is returned by the function it means that we have found a solution
-                        //Therefore this function returns true as well
-                        if (solve(sudoku, x + 1, y))
-                            return true;
-                    }
+                    ////Once we have found a partial solution we do a forward check
+                    ////If this check is false it means there is no actual possible solution possible
+                    ////with this partial solution, thus we return false
+                    //if (!sudoku.forwardChecking(x, y))
+                    //{
+                    //    sudoku.sudokuField[x, y] = 0;
+                    //    //return false;
+                    //}
+                    //else
+                    //{
+                    //    //If we have reached this point it means that this partial solution is good to expand upon
+                    //    //We make use of recursion to check the next field
+                    //    //If true is returned by the function it means that we have found a solution
+                    //    //Therefore this function returns true as well
+                    //    if (solve(sudoku, x + 1, y))
+                    //        return true;
+                    //}
 
-
+                    if (solve(sudoku, x + 1, y, useForwardChecking))
+                    {
+                        return true;
+                    }
 
                     
                 }
