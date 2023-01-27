@@ -28,7 +28,7 @@ namespace SudokuCBT
             //Print the elapsed time
             Console.WriteLine("Elapsed time: " + s.ElapsedMilliseconds.ToString() + " ms");
 
-            BenchmarkSudoku(args, false);
+            //BenchmarkSudoku(args, false);
 
             Console.ReadKey();
         }
